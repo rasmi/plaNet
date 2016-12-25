@@ -7,16 +7,16 @@ from PIL import Image
 
 def resize(image, size=256):
     """
-    Crops a centered square and scales down to desired size.
+    Scales an image down to the desired size and crops it so that it's square.
+    Deletes images whose smaller size is too small.
     """
 
     im = Image.open(image)
-    print im.size
+
     # Scale the smaller side down to size=256.
     smaller_side, smaller_side_res = min(enumerate(im.size), key=lambda s: s[1])
     larger_side, larger_side_res = max(enumerate(im.size), key=lambda s: s[1])
 
-    print smaller_side_res, larger_side_res
     # Remove images that are too small.
     if smaller_side < size:
         os.remove(image)
@@ -34,10 +34,12 @@ def resize(image, size=256):
 
     # Trim the rest to reach size on the larger end
     crop_amount = new_large_side_res - size
+    # Pad odd-resolution crops to make sure we end up with 256x256.
     if crop_amount % 2 == 0:
         pad = 0
     else:
         pad = 1
+
     trim = math.floor(crop_amount/2)
 
     if larger_side:
@@ -47,7 +49,6 @@ def resize(image, size=256):
         # Width is larger, trim horizontally.
         box = (0 + trim + pad, 0, new_large_side_res - trim, size)
 
-    print box
     # Crop.
     im = im.crop(box)
     
