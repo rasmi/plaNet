@@ -13,6 +13,10 @@ def resize(image, size=256):
 
     im = Image.open(image)
 
+    if im.size == (size, size):
+        print image + ' ALREADY RESIZED'
+        return
+
     # Scale the smaller side down to size=256.
     smaller_side, smaller_side_res = min(enumerate(im.size), key=lambda s: s[1])
     larger_side, larger_side_res = max(enumerate(im.size), key=lambda s: s[1])
@@ -51,5 +55,7 @@ def resize(image, size=256):
 
     # Crop.
     im = im.crop(box)
-    
-    im.save(image, 'JPEG')
+    if im.size == (size, size):
+        im.save(image, 'JPEG')
+    else:
+        print image + ' FAILED'
